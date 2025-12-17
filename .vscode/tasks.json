@@ -3,6 +3,18 @@
 {
 	"version": "2.0.0",
 	"tasks": [
+        {
+            "type": "npm",
+            "script": "compile",
+            "label": "npm: compile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "never"
+            }
+        },
 		{
             "label": "watch",
             "dependsOn": [
@@ -11,16 +23,11 @@
             ],
             "presentation": {
                 "reveal": "never"
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": true
             }
         },
         {
             "type": "npm",
             "script": "watch:esbuild",
-            "group": "build",
             "problemMatcher": "$esbuild-watch",
             "isBackground": true,
             "label": "npm: watch:esbuild",
@@ -32,7 +39,6 @@
 		{
             "type": "npm",
             "script": "watch:tsc",
-            "group": "build",
             "problemMatcher": "$tsc-watch",
             "isBackground": true,
             "label": "npm: watch:tsc",
@@ -44,18 +50,18 @@
 		{
 			"type": "npm",
 			"script": "watch-tests",
+            "label": "npm: watch-tests",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
 				"reveal": "never",
 				"group": "watchers"
-			},
-			"group": "build"
+            }
 		},
 		{
 			"label": "tasks: watch-tests",
 			"dependsOn": [
-				"npm: watch",
+                "watch",
 				"npm: watch-tests"
 			],
 			"problemMatcher": []

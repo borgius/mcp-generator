@@ -16,8 +16,10 @@
   "contributes": {
     "languageModelTools": [
       {
-        "name": "mcp__brop-mcp__brop_navigate",
-        "toolReferenceName": "mcp__brop-mcp__brop_navigate",
+        "name": "brop_navigate",
+        "toolReferenceName": "brop_navigate",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_navigate",
         "displayName": "brop_navigate (brop-mcp)",
         "modelDescription": "Navigate to a URL in the browser",
         "userDescription": "Navigate to a URL in the browser",
@@ -47,8 +49,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_get_page_content",
-        "toolReferenceName": "mcp__brop-mcp__brop_get_page_content",
+        "name": "brop_get_page_content",
+        "toolReferenceName": "brop_get_page_content",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_get_page_content",
         "displayName": "brop_get_page_content (brop-mcp)",
         "modelDescription": "Get basic page content from the browser (raw HTML and text)",
         "userDescription": "Get basic page content from the browser (raw HTML and text)",
@@ -74,8 +78,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_get_simplified_content",
-        "toolReferenceName": "mcp__brop-mcp__brop_get_simplified_content",
+        "name": "brop_get_simplified_content",
+        "toolReferenceName": "brop_get_simplified_content",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_get_simplified_content",
         "displayName": "brop_get_simplified_content (brop-mcp)",
         "modelDescription": "Get simplified and cleaned page content in HTML or Markdown format",
         "userDescription": "Get simplified and cleaned page content in HTML or Markdown format",
@@ -114,8 +120,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_execute_script",
-        "toolReferenceName": "mcp__brop-mcp__brop_execute_script",
+        "name": "brop_execute_script",
+        "toolReferenceName": "brop_execute_script",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_execute_script",
         "displayName": "brop_execute_script (brop-mcp)",
         "modelDescription": "Execute JavaScript in the browser",
         "userDescription": "Execute JavaScript in the browser",
@@ -145,8 +153,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_click_element",
-        "toolReferenceName": "mcp__brop-mcp__brop_click_element",
+        "name": "brop_click_element",
+        "toolReferenceName": "brop_click_element",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_click_element",
         "displayName": "brop_click_element (brop-mcp)",
         "modelDescription": "Click an element on the page",
         "userDescription": "Click an element on the page",
@@ -176,8 +186,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_type_text",
-        "toolReferenceName": "mcp__brop-mcp__brop_type_text",
+        "name": "brop_type_text",
+        "toolReferenceName": "brop_type_text",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_type_text",
         "displayName": "brop_type_text (brop-mcp)",
         "modelDescription": "Type text into an input field",
         "userDescription": "Type text into an input field",
@@ -212,8 +224,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_create_page",
-        "toolReferenceName": "mcp__brop-mcp__brop_create_page",
+        "name": "brop_create_page",
+        "toolReferenceName": "brop_create_page",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_create_page",
         "displayName": "brop_create_page (brop-mcp)",
         "modelDescription": "Create a new browser page/tab",
         "userDescription": "Create a new browser page/tab",
@@ -240,8 +254,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_close_tab",
-        "toolReferenceName": "mcp__brop-mcp__brop_close_tab",
+        "name": "brop_close_tab",
+        "toolReferenceName": "brop_close_tab",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_close_tab",
         "displayName": "brop_close_tab (brop-mcp)",
         "modelDescription": "Close a browser tab",
         "userDescription": "Close a browser tab",
@@ -267,8 +283,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_list_tabs",
-        "toolReferenceName": "mcp__brop-mcp__brop_list_tabs",
+        "name": "brop_list_tabs",
+        "toolReferenceName": "brop_list_tabs",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_list_tabs",
         "displayName": "brop_list_tabs (brop-mcp)",
         "modelDescription": "List all open browser tabs",
         "userDescription": "List all open browser tabs",
@@ -295,8 +313,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_activate_tab",
-        "toolReferenceName": "mcp__brop-mcp__brop_activate_tab",
+        "name": "brop_activate_tab",
+        "toolReferenceName": "brop_activate_tab",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_activate_tab",
         "displayName": "brop_activate_tab (brop-mcp)",
         "modelDescription": "Switch to/activate a specific browser tab",
         "userDescription": "Switch to/activate a specific browser tab",
@@ -322,8 +342,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_get_server_status",
-        "toolReferenceName": "mcp__brop-mcp__brop_get_server_status",
+        "name": "brop_get_server_status",
+        "toolReferenceName": "brop_get_server_status",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_get_server_status",
         "displayName": "brop_get_server_status (brop-mcp)",
         "modelDescription": "Get BROP server status and connection info",
         "userDescription": "Get BROP server status and connection info",
@@ -341,8 +363,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_start_console_capture",
-        "toolReferenceName": "mcp__brop-mcp__brop_start_console_capture",
+        "name": "brop_start_console_capture",
+        "toolReferenceName": "brop_start_console_capture",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_start_console_capture",
         "displayName": "brop_start_console_capture (brop-mcp)",
         "modelDescription": "Start capturing console logs for a tab using Chrome Debugger API",
         "userDescription": "Start capturing console logs for a tab using Chrome Debugger API",
@@ -368,8 +392,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_get_console_logs",
-        "toolReferenceName": "mcp__brop-mcp__brop_get_console_logs",
+        "name": "brop_get_console_logs",
+        "toolReferenceName": "brop_get_console_logs",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_get_console_logs",
         "displayName": "brop_get_console_logs (brop-mcp)",
         "modelDescription": "Retrieve console logs captured since capture was started (requires active capture session)",
         "userDescription": "Retrieve console logs captured since capture was started (requires active capture session)",
@@ -410,8 +436,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_clear_console_logs",
-        "toolReferenceName": "mcp__brop-mcp__brop_clear_console_logs",
+        "name": "brop_clear_console_logs",
+        "toolReferenceName": "brop_clear_console_logs",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_clear_console_logs",
         "displayName": "brop_clear_console_logs (brop-mcp)",
         "modelDescription": "Clear captured console logs without stopping the capture session",
         "userDescription": "Clear captured console logs without stopping the capture session",
@@ -437,8 +465,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__brop_stop_console_capture",
-        "toolReferenceName": "mcp__brop-mcp__brop_stop_console_capture",
+        "name": "brop_stop_console_capture",
+        "toolReferenceName": "brop_stop_console_capture",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "brop_stop_console_capture",
         "displayName": "brop_stop_console_capture (brop-mcp)",
         "modelDescription": "Stop console log collection and detach the debugger",
         "userDescription": "Stop console log collection and detach the debugger",
@@ -464,8 +494,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__cdp_execute_command",
-        "toolReferenceName": "mcp__brop-mcp__cdp_execute_command",
+        "name": "brop_cdp_execute_command",
+        "toolReferenceName": "brop_cdp_execute_command",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "cdp_execute_command",
         "displayName": "cdp_execute_command (brop-mcp)",
         "modelDescription": "Execute a Chrome DevTools Protocol command",
         "userDescription": "Execute a Chrome DevTools Protocol command",
@@ -497,8 +529,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__cdp_create_page",
-        "toolReferenceName": "mcp__brop-mcp__cdp_create_page",
+        "name": "brop_cdp_create_page",
+        "toolReferenceName": "brop_cdp_create_page",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "cdp_create_page",
         "displayName": "cdp_create_page (brop-mcp)",
         "modelDescription": "Create a new page using CDP and attach to it",
         "userDescription": "Create a new page using CDP and attach to it",
@@ -521,8 +555,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__cdp_navigate",
-        "toolReferenceName": "mcp__brop-mcp__cdp_navigate",
+        "name": "brop_cdp_navigate",
+        "toolReferenceName": "brop_cdp_navigate",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "cdp_navigate",
         "displayName": "cdp_navigate (brop-mcp)",
         "modelDescription": "Navigate to a URL using CDP",
         "userDescription": "Navigate to a URL using CDP",
@@ -558,8 +594,10 @@
         }
       },
       {
-        "name": "mcp__brop-mcp__cdp_evaluate",
-        "toolReferenceName": "mcp__brop-mcp__cdp_evaluate",
+        "name": "brop_cdp_evaluate",
+        "toolReferenceName": "brop_cdp_evaluate",
+        "mcpServer": "brop-mcp",
+        "mcpTool": "cdp_evaluate",
         "displayName": "cdp_evaluate (brop-mcp)",
         "modelDescription": "Evaluate JavaScript in the page using CDP",
         "userDescription": "Evaluate JavaScript in the page using CDP",

@@ -8,6 +8,8 @@ import { McpManager } from './mcp/mcpManager';
 type LanguageModelToolContribution = {
 	name: string;
 	toolReferenceName?: string;
+	mcpServer?: string;
+	mcpTool?: string;
 };
 
 function parseToolReferenceName(entry: LanguageModelToolContribution): string {
@@ -15,13 +17,13 @@ function parseToolReferenceName(entry: LanguageModelToolContribution): string {
 	return entry.toolReferenceName ?? entry.name;
 }
 
-function parseMcpRef(refName: string): { server: string; tool: string } | undefined {
-	// Expected: mcp__<server>__<tool>
+function parseMcpRefFromToolId(toolId: string): { server: string; tool: string } | undefined {
+	// Legacy format: mcp__<server>__<tool>
 	const prefix = 'mcp__';
-	if (!refName.startsWith(prefix)) {
+	if (!toolId.startsWith(prefix)) {
 		return undefined;
 	}
-	const rest = refName.slice(prefix.length);
+	const rest = toolId.slice(prefix.length);
 	const sep = '__';
 	const firstSep = rest.indexOf(sep);
 	if (firstSep === -1) {
@@ -85,15 +87,17 @@ export async function activate(context: vscode.ExtensionContext) {
 		(context.extension.packageJSON?.contributes?.languageModelTools as LanguageModelToolContribution[] | undefined) ?? [];
 
 	for (const entry of contributed) {
-		const refName = parseToolReferenceName(entry);
-		const parsed = parseMcpRef(refName);
+		const toolId = parseToolReferenceName(entry);
+		const server = entry.mcpServer;
+		const tool = entry.mcpTool;
+		const parsed = server && tool ? { server, tool } : parseMcpRefFromToolId(toolId);
 		if (!parsed) {
-			output.appendLine(`[skip] Not an mcp.* tool: ${refName}`);
+			output.appendLine(`[skip] Tool missing MCP routing metadata: ${toolId}`);
 			continue;
 		}
 
 		context.subscriptions.push(
-			vscode.lm.registerTool(refName, {
+			vscode.lm.registerTool(toolId, {
 				async invoke(invocation, token) {
 					const res = await manager.call(parsed.server, parsed.tool, invocation.input);
 					const text = mcpResultToText(res);

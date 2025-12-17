@@ -44,7 +44,13 @@ export class McpServerClient {
 			? path.resolve(this.opts.rootDir ?? process.cwd(), this.config.cwd)
 			: (this.opts.rootDir ?? process.cwd());
 
-		this.child = spawn(this.config.command, this.config.args ?? [], {
+		const spawnCommand = this.config.command;
+		const spawnArgs = this.config.args ?? [];
+		this.opts.logger?.(
+			`[${this.name}] spawn: ${spawnCommand}${spawnArgs.length ? ' ' + spawnArgs.join(' ') : ''} (cwd=${cwd})`
+		);
+
+		this.child = spawn(spawnCommand, spawnArgs, {
 			cwd,
 			env: {
 				...process.env,
@@ -54,6 +60,12 @@ export class McpServerClient {
 		});
 
 		const child = this.child;
+		const errorPromise = new Promise<never>((_, reject) => {
+			child.once('error', (err) => {
+				this.opts.logger?.(`[${this.name}] spawn error: ${String((err as any)?.message ?? err)}`);
+				reject(err);
+			});
+		});
 		const exitPromise = new Promise<never>((_, reject) => {
 			child.once('exit', (code, signal) => {
 				reject(new Error(`MCP server '${this.name}' exited before ready (code=${code}, signal=${signal})`));
@@ -73,7 +85,7 @@ export class McpServerClient {
 			framing: this.config.transport?.framing ?? 'content-length',
 		});
 
-		await Promise.race([this.initialize(), exitPromise, this.timeout(60000, 'initialize timeout')]);
+		await Promise.race([this.initialize(), errorPromise, exitPromise, this.timeout(60000, 'initialize timeout')]);
 	}
 
 	public async stop(): Promise<void> {

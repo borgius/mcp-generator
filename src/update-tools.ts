@@ -8,6 +8,8 @@ import type { McpTool } from './mcp/types';
 type LanguageModelToolContribution = {
 	name: string;
 	toolReferenceName?: string;
+	mcpServer?: string;
+	mcpTool?: string;
 	displayName?: string;
 	modelDescription?: string;
 	userDescription?: string;
@@ -22,9 +24,22 @@ function sanitizeToolSegment(value: string): string {
 	return value.replace(/[^a-zA-Z0-9_-]+/g, '_');
 }
 
-function toolReferenceName(server: string, toolName: string): string {
-	// Tool IDs must match /^[\w-]+$/; dots aren't allowed.
-	return `mcp__${sanitizeToolSegment(server)}__${sanitizeToolSegment(toolName)}`;
+function serverShortName(server: string): string {
+	const trimmed = server.replace(/[-_]?mcp$/i, '');
+	const base = trimmed.length > 0 ? trimmed : server;
+	return sanitizeToolSegment(base);
+}
+
+function toolIdFor(server: string, toolName: string): string {
+	const short = serverShortName(server);
+	const tool = sanitizeToolSegment(toolName);
+	if (!short) {
+		return tool;
+	}
+	if (tool.startsWith(`${short}_`)) {
+		return tool;
+	}
+	return `${short}_${tool}`;
 }
 
 function coerceInputSchema(tool: McpTool): object {
@@ -64,16 +79,24 @@ async function main(): Promise<void> {
 		}
 
 		const contributions: LanguageModelToolContribution[] = [];
+		const usedIds = new Set<string>();
 
 		const serverNames = Object.keys(toolsByServer).sort();
 		for (const serverName of serverNames) {
 			const tools = toolsByServer[serverName] ?? [];
 			for (const tool of tools) {
-				const ref = toolReferenceName(serverName, tool.name);
+				let id = toolIdFor(serverName, tool.name);
+				if (usedIds.has(id)) {
+					id = `${id}__${sanitizeToolSegment(serverName)}`;
+				}
+				usedIds.add(id);
+
 				const description = tool.description ?? '';
 				contributions.push({
-					name: ref,
-					toolReferenceName: ref,
+					name: id,
+					toolReferenceName: id,
+					mcpServer: serverName,
+					mcpTool: tool.name,
 					displayName: `${tool.name} (${serverName})`,
 					modelDescription: description,
 					userDescription: description,
