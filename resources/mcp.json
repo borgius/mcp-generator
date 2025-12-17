@@ -1,9 +1,9 @@
 {
   "servers": {
-    "brop-mcp": {
-      "command": "npx",
+    "mock-mcp": {
+      "command": "node",
       "args": [
-        "@borgius/brop-mcp@latest"
+        "scripts/mock-mcp.js"
       ],
       "transport": {
         "type": "stdio",

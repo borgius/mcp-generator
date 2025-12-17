@@ -73,9 +73,17 @@ async function main(): Promise<void> {
 			}
 		}
 
+		const isCi = String(process.env.CI ?? '').toLowerCase() === 'true';
 		if (failures.length > 0) {
 			const lines = failures.map((f) => `- ${f.server}: ${String((f.error as any)?.message ?? f.error)}`);
-			throw new Error(`Failed to query tools from one or more MCP servers:\n${lines.join('\n')}`);
+			const errMsg = `Failed to query tools from one or more MCP servers:\n${lines.join('\n')}`;
+			if (isCi) {
+				// In CI we don't want to fail because external servers may not be reachable.
+				process.stderr.write('[warn] update-tools: some servers could not be queried; skipping update in CI\n');
+				await manager.stopAll();
+				process.exit(0);
+			}
+			throw new Error(errMsg);
 		}
 
 		const contributions: LanguageModelToolContribution[] = [];
@@ -108,12 +116,31 @@ async function main(): Promise<void> {
 			}
 		}
 
+		if (contributions.length === 0) {
+			process.stdout.write('No tools discovered; package.json not modified.\n');
+			await manager.stopAll();
+			return;
+		}
+
 		const rawPkg = await fs.readFile(packageJsonPath, 'utf8');
 		const pkg = JSON.parse(rawPkg) as any;
 		pkg.contributes ??= {};
 		pkg.contributes.languageModelTools = contributions;
 
-		await fs.writeFile(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
+		const newPkgRaw = JSON.stringify(pkg, null, 2) + '\n';
+		if (newPkgRaw === rawPkg) {
+			process.stdout.write('No changes to package.json.\n');
+			await manager.stopAll();
+			return;
+		}
+
+		if (isCi) {
+			// In CI, if update-tools would change package.json, fail to prompt author to run update-tools locally and commit.
+			process.stderr.write('update-tools would modify package.json — please run `npm run update-tools` locally and commit the changes.\n');
+			process.exit(2);
+		}
+
+		await fs.writeFile(packageJsonPath, newPkgRaw, 'utf8');
 		process.stdout.write(`Updated contributes.languageModelTools (${contributions.length} tools)\n`);
 	} finally {
 		await manager.stopAll();

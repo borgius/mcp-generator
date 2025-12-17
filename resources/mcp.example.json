@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "brop-mcp": {
+      "command": "npx",
+      "args": ["@borgius/brop-mcp@latest"],
+      "transport": { "type": "stdio", "framing": "ndjson" }
+    }
+  }
+}
