@@ -4,6 +4,31 @@ import * as path from 'node:path';
 import { JsonRpcClient } from './jsonRpc';
 import type { McpCallToolResponse, McpServerConfig, McpTool, McpToolsListResponse } from './types';
 
+function augmentPathEnv(existing: string | undefined): string {
+	const separator = path.delimiter;
+	const parts = (existing ?? '').split(separator).filter(Boolean);
+	const extras = [
+		// Common macOS locations where Node/npm/npx live
+		'/opt/homebrew/bin',
+		'/usr/local/bin',
+		'/usr/bin',
+		'/bin',
+	];
+	const seen = new Set<string>();
+	const out: string[] = [];
+	for (const p of [...parts, ...extras]) {
+		if (!p) {
+			continue;
+		}
+		if (seen.has(p)) {
+			continue;
+		}
+		seen.add(p);
+		out.push(p);
+	}
+	return out.join(separator);
+}
+
 export type McpServerClientOptions = {
 	logger?: (message: string) => void;
 	rootDir?: string;
@@ -50,19 +75,29 @@ export class McpServerClient {
 			`[${this.name}] spawn: ${spawnCommand}${spawnArgs.length ? ' ' + spawnArgs.join(' ') : ''} (cwd=${cwd})`
 		);
 
+		const childEnv: NodeJS.ProcessEnv = {
+			...process.env,
+			...(this.config.env ?? {}),
+		};
+		childEnv.PATH = augmentPathEnv(childEnv.PATH);
+
 		this.child = spawn(spawnCommand, spawnArgs, {
 			cwd,
-			env: {
-				...process.env,
-				...(this.config.env ?? {}),
-			},
+			env: childEnv,
 			stdio: 'pipe',
 		});
 
 		const child = this.child;
 		const errorPromise = new Promise<never>((_, reject) => {
 			child.once('error', (err) => {
-				this.opts.logger?.(`[${this.name}] spawn error: ${String((err as any)?.message ?? err)}`);
+				const msg = String((err as any)?.message ?? err);
+				this.opts.logger?.(`[${this.name}] spawn error: ${msg}`);
+				const code = (err as any)?.code;
+				if (code === 'ENOENT') {
+					this.opts.logger?.(
+						`[${this.name}] hint: command not found (ENOENT). If this is 'npx', launch VS Code from a shell (so PATH is inherited) or set an absolute command path in resources/mcp.json.`
+					);
+				}
 				reject(err);
 			});
 		});
