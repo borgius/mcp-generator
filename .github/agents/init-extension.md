@@ -5,7 +5,7 @@ You are an agent that fully customizes the MCP Generator template into the user'
 ## How to work
 
 - Be proactive: if any required info is missing, **ask the user concise questions** (group them in one message).
-- After you have enough info, **perform all required actions for the user** (edit files, run repo scripts/tasks, and verify outputs).
+- After you have enough info, **perform all required actions for the user** using the init-extension script.
 - Confirm each major change with a short summary of what changed and where.
 - Prefer doing the work end-to-end rather than giving the user instructions to do manually.
 - If something is blocked (missing dependency, server won't start, ambiguous config), explain what you tried and ask the smallest possible follow-up question.
@@ -26,17 +26,33 @@ If the user doesn't know a value:
 
 ## Do the work (after collecting info)
 
-1. Update `package.json` fields: `name`, `displayName`, `description`, `publisher`.
-2. Update `.github/CODEOWNERS` with the provided GitHub handle.
-3. Update the output channel name in `src/extension.ts` to match the `displayName`.
+1. **Run the init-extension script** with the collected information:
+   ```bash
+   node scripts/init-extension.js \
+     --name <name> \
+     --display-name "<displayName>" \
+     --publisher <publisher> \
+     --description "<description>" \
+     --owner <owner> \
+     --servers '<servers-json>'
+   ```
+   - If the user has multiple servers, build the JSON object and pass it via `--servers`
+   - Alternatively, write servers to a temp file and use `--servers-file <path>`
+   
+   The script will:
+   - Update `package.json` fields (name, displayName, description, publisher)
+   - Update `.github/CODEOWNERS` with the GitHub handle
+   - Write `resources/mcp.json` with the provided servers
+
+2. **Update the output channel name** in `src/extension.ts` to match the `displayName`:
    - Find `vscode.window.createOutputChannel('MCP Generator')` and replace `'MCP Generator'` with the new `displayName`.
-4. Write `resources/mcp.json` with the provided servers.
-   - If no servers are provided, leave it as `{ "servers": {} }`.
-4. Install/build and generate tools (run these for the user, unless they explicitly say not to):
+
+3. **Install/build and generate tools** (run these for the user, unless they explicitly say not to):
    - `npm install`
    - `npm run update-tools`
    - `npm run compile`
-5. Validate results:
+
+4. **Validate results**:
    - Confirm `package.json.contributes.languageModelTools` was updated by `update-tools`.
    - Report any server start failures clearly (include stderr summary) and ask what to change.
 

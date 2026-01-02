@@ -12,28 +12,129 @@ function slugify(name) {
   return name.toLowerCase().replace(/[^a-z0-9-_]+/g, '-').replace(/^-+|-+$/g, '').replace(/--+/g, '-');
 }
 
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const parsed = {};
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg.startsWith('--')) {
+      const key = arg.slice(2);
+      const value = args[i + 1];
+      if (key === 'servers' || key === 'servers-file') {
+        parsed[key] = value;
+        i++;
+      } else if (value && !value.startsWith('--')) {
+        parsed[key] = value;
+        i++;
+      } else {
+        parsed[key] = true;
+      }
+    }
+  }
+  return parsed;
+}
+
+function showHelp() {
+  console.log(`
+Usage: node init-extension.js [options]
+
+Options:
+  --name <name>              Extension name (kebab-case)
+  --display-name <name>      Display name for the extension
+  --publisher <id>           Publisher ID
+  --description <text>       Short description
+  --owner <handle>           GitHub owner (e.g., @username)
+  --servers <json>           MCP servers as JSON string
+  --servers-file <path>      Path to JSON file with MCP servers
+  --help                     Show this help message
+
+Examples:
+  Interactive mode:
+    node init-extension.js
+
+  With arguments:
+    node init-extension.js --name my-mcp-ext --display-name "My MCP Extension" --publisher myid --description "My extension" --owner @myhandle
+
+  With servers JSON:
+    node init-extension.js --name my-ext --servers '{"my-mcp":{"command":"npx","args":["@org/srv"],"transport":{"type":"stdio","framing":"ndjson"}}}'
+
+  With servers from file:
+    node init-extension.js --name my-ext --servers-file ./servers.json
+`);
+}
+
 async function main() {
+  const cliArgs = parseArgs();
+
+  if (cliArgs.help) {
+    showHelp();
+    process.exit(0);
+  }
+
   console.log('Init: Create a new extension from the MCP Generator template');
 
-  const name = await ask('Extension name (kebab-case, e.g. my-mcp-extension): ');
+  // Get values from CLI args or prompt interactively
+  let name = cliArgs.name;
+  if (!name) {
+    name = await ask('Extension name (kebab-case, e.g. my-mcp-extension): ');
+  }
   if (!name) { console.log('Aborted: name required'); process.exit(1); }
-  const displayName = await ask(`Display name (default: ${name}): `) || name;
-  const publisher = await ask('Publisher (your npm / marketplace publisher id): ');
-  const description = await ask('Short description: ');
-  const owner = await ask('GitHub owner to set in CODEOWNERS (e.g. @your-username): ');
 
-  const addServers = (await ask('Add MCP servers now? (y/N): ')).toLowerCase() === 'y';
-  const servers = {};
-  if (addServers) {
-    while (true) {
-      const serverName = await ask('  Server identifier (e.g. my-mcp) or empty to finish: ');
-      if (!serverName) break;
-      const command = await ask('    Command to run (default: npx): ') || 'npx';
-      const argsRaw = await ask('    Space-separated args (e.g. @org/srv@latest) or empty: ');
-      const args = argsRaw ? argsRaw.split(/\s+/).filter(Boolean) : [];
-      const framing = (await ask('    Framing (ndjson/content-length) [ndjson]: ')) || 'ndjson';
-      servers[serverName] = { command, args, transport: { type: 'stdio', framing } };
-      console.log(`    Added ${serverName}`);
+  let displayName = cliArgs['display-name'];
+  if (!displayName) {
+    displayName = await ask(`Display name (default: ${name}): `) || name;
+  }
+
+  let publisher = cliArgs.publisher;
+  if (!publisher) {
+    publisher = await ask('Publisher (your npm / marketplace publisher id): ');
+  }
+
+  let description = cliArgs.description;
+  if (!description) {
+    description = await ask('Short description: ');
+  }
+
+  let owner = cliArgs.owner;
+  if (!owner) {
+    owner = await ask('GitHub owner to set in CODEOWNERS (e.g. @your-username): ');
+  }
+
+  let servers = {};
+  
+  // Handle servers from CLI
+  if (cliArgs.servers) {
+    try {
+      servers = JSON.parse(cliArgs.servers);
+      console.log(`Loaded ${Object.keys(servers).length} server(s) from --servers argument`);
+    } catch (err) {
+      console.error('Error parsing --servers JSON:', err.message);
+      process.exit(1);
+    }
+  } else if (cliArgs['servers-file']) {
+    try {
+      const serversPath = path.resolve(cliArgs['servers-file']);
+      const content = fs.readFileSync(serversPath, 'utf8');
+      servers = JSON.parse(content);
+      console.log(`Loaded ${Object.keys(servers).length} server(s) from ${serversPath}`);
+    } catch (err) {
+      console.error('Error reading servers file:', err.message);
+      process.exit(1);
+    }
+  } else {
+    // Interactive server prompts
+    const addServers = (await ask('Add MCP servers now? (y/N): ')).toLowerCase() === 'y';
+    if (addServers) {
+      while (true) {
+        const serverName = await ask('  Server identifier (e.g. my-mcp) or empty to finish: ');
+        if (!serverName) break;
+        const command = await ask('    Command to run (default: npx): ') || 'npx';
+        const argsRaw = await ask('    Space-separated args (e.g. @org/srv@latest) or empty: ');
+        const args = argsRaw ? argsRaw.split(/\s+/).filter(Boolean) : [];
+        const framing = (await ask('    Framing (ndjson/content-length) [ndjson]: ')) || 'ndjson';
+        servers[serverName] = { command, args, transport: { type: 'stdio', framing } };
+        console.log(`    Added ${serverName}`);
+      }
     }
   }
 
