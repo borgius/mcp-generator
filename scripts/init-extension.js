@@ -19,14 +19,13 @@ function parseArgs() {
     const arg = args[i];
     if (arg.startsWith('--')) {
       const key = arg.slice(2);
-      const value = args[i + 1];
-      if (key === 'servers' || key === 'servers-file') {
+      // Check if there's a next argument and it's not another flag
+      if (i + 1 < args.length && !args[i + 1].startsWith('--')) {
+        const value = args[i + 1];
         parsed[key] = value;
-        i++;
-      } else if (value && !value.startsWith('--')) {
-        parsed[key] = value;
-        i++;
+        i++; // Skip the value in next iteration
       } else {
+        // Flag without value (boolean flag)
         parsed[key] = true;
       }
     }
