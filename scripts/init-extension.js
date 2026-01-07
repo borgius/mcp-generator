@@ -144,6 +144,22 @@ async function main() {
   pkg.displayName = displayName;
   if (publisher) pkg.publisher = publisher;
   if (description) pkg.description = description;
+  
+  // Add repository field from git remote if available
+  try {
+    const { execSync } = require('child_process');
+    const remoteUrl = execSync('git remote get-url origin', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }).trim();
+    if (remoteUrl) {
+      pkg.repository = {
+        type: 'git',
+        url: remoteUrl
+      };
+      console.log('Added repository field from git remote');
+    }
+  } catch (err) {
+    // No git remote, skip
+  }
+  
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
   console.log('Updated package.json');
 
@@ -171,6 +187,15 @@ async function main() {
   } else {
     if (!fs.existsSync(mcpPath)) fs.writeFileSync(mcpPath, JSON.stringify({ servers: {} }, null, 2) + '\n', 'utf8');
     console.log('No servers added; left resources/mcp.json with empty servers object');
+  }
+
+  // Create LICENSE if it doesn't exist
+  const licensePath = path.join(process.cwd(), 'LICENSE');
+  if (!fs.existsSync(licensePath)) {
+    const year = new Date().getFullYear();
+    const licenseContent = `MIT License\n\nCopyright (c) ${year}\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n`;
+    fs.writeFileSync(licensePath, licenseContent, 'utf8');
+    console.log('Created LICENSE file');
   }
 
   console.log('\nDone. Next steps:');

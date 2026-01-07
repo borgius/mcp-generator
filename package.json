@@ -3,6 +3,11 @@
   "displayName": "MCP Generator",
   "description": "Generate VS Code language model tools from embedded MCP config",
   "version": "0.0.1",
+  "publisher": "borgius",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/borgius/mcp-generator.git"
+  },
   "engines": {
     "vscode": "^1.107.0"
   },
@@ -82,6 +87,7 @@
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
     "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "publish": "vsce publish",
     "update-tools": "vite-node src/update-tools.ts",
     "init-extension": "vite-node scripts/init-extension.js",
     "compile-tests": "tsc -p . --outDir out",
@@ -97,6 +103,7 @@
     "@types/vscode": "^1.107.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.7.1",
     "esbuild": "^0.27.1",
     "eslint": "^9.39.1",
     "npm-run-all": "^4.1.5",
